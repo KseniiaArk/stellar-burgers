@@ -6,3 +6,4 @@ export type TIngredientsCategoryUIProps = {
   ingredients: TIngredient[];
   ingredientsCounters: Record<string, number>;
 };
+
