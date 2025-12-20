@@ -28,7 +28,6 @@ export const BurgerIngredientUI: FC<TBurgerIngredientUIProps> = memo(
             <CurrencyIcon type='primary' />
           </div>
           <p
-            data-testid='ingredient_name'
             className={`text text_type_main-default ${styles.text}`}
           >
             {name}

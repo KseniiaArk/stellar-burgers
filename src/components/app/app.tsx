@@ -14,9 +14,13 @@ import styles from './app.module.css';
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { checkUserAuth, setIsAuthChecked } from '../../services/slices/auth-slice';
+import { 
+  checkUserAuth, 
+  setIsAuthChecked } from '../../services/slices/auth-slice';
 import { TIngredient } from '@utils-types';
-import { ProtectedRoute, UnAuthRoute } from '../protected-route/protected-route';
+import { 
+  ProtectedRoute, 
+  UnAuthRoute } from '../protected-route/protected-route';
 import { useDispatch, useSelector } from '../../services/store';
 import {
   getIngredientsThunk,
@@ -98,7 +102,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        // Для открытия страницы без модального окна, при копировании ссылки
         <Route path='/feed/:number' element={<OrderInfo />} />
         <Route path='/ingredients/:id' element={<IngredientDetails />} />
         <Route

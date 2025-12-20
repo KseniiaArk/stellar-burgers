@@ -10,7 +10,8 @@ export const ProfileMenu: FC = () => {
   const dispatch = useDispatch();
 
   const handleLogout = () => {
-    dispatch(logoutUserThunk()).then(() => navigate('/login', {replace: true}));
+    dispatch(logoutUserThunk()).then(() => 
+      navigate('/login', {replace: true}));
   };
 
   return <ProfileMenuUI handleLogout={handleLogout} pathname={pathname} />;

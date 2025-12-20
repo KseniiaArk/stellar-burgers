@@ -5,7 +5,7 @@ import {
   CurrencyIcon
 } from '@zlden/react-developer-burger-ui-components';
 import styles from './burger-constructor.module.css';
-import { BurgerConstructorUIProps } from './type';
+import { BurgerConstructorUIProps, TConstructorItems } from './type';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorElement, Modal } from '@components';
 import { Preloader, OrderDetailsUI } from '@ui';
@@ -19,12 +19,10 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   closeOrderModal
 }) => (
   <section
-    data-testid='burger_constructor'
     className={styles.burger_constructor}
   >
     {constructorItems.bun ? (
       <div
-        data-testid='top_bun_in_constructor'
         className={`${styles.element} mb-4 mr-4`}
       >
         <ConstructorElement
@@ -42,7 +40,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         Выберите булки
       </div>
     )}
-    <ul data-testid='constructor_ingredients_list' className={styles.elements}>
+    <ul className={styles.elements}>
       {constructorItems.ingredients.length > 0 ? (
         constructorItems.ingredients.map(
           (item: TConstructorIngredient, index: number) => (
@@ -85,7 +83,6 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         <CurrencyIcon type='primary' />
       </div>
       <Button
-        data-testid='make_order'
         htmlType='button'
         type='primary'
         size='large'

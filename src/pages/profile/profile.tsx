@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from '../../services/store';
 export const Profile: FC = () => {
   const dispatch = useDispatch();
 
-  /** DO: взять переменную из стора */
   const user = useSelector(selectUser);
   if (!user) return null;
 

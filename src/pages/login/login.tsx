@@ -28,7 +28,6 @@ export const Login: FC = () => {
     dispatch(loginUserThunk({ email, password }));
   };
 
-  //const loading = useSelector(selectUserLoading);
   if (loading) return <Preloader />;
 
   return (

@@ -1,56 +1,37 @@
-// src/services/slices/orders-slice.ts
-import { createAction, createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { TOrder } from '@utils-types';
-import {
-  getFeedsApi,
-  getOrderByNumberApi,
-  getOrdersApi,
-  orderBurgerApi,
-  TFeedsResponse
-} from '@api';
+import { orderBurgerApi, getOrderByNumberApi } from '@api';
 
 export interface OrderState {
-  feed: TFeedsResponse;
-  userOrders: TOrder[];
-  orderByNumber: TOrder | null;
   newOrder: {
     order: TOrder | null;
     name: string;
   };
+  orderByNumber: TOrder | null;
   orderRequest: boolean;
   loading: boolean;
   error: string | null;
-  localOrders: TOrder[];
 }
 
 const initialState: OrderState = {
-  feed: {
-    success: false,
-    total: 0,
-    totalToday: 0,
-    orders: []
-  },
-  userOrders: [],
-  orderByNumber: null,
   newOrder: {
     order: null,
     name: ''
   },
+  orderByNumber: null,
   orderRequest: false,
   loading: false,
-  error: null,
-  localOrders: []
+  error: null
 };
 
-export const addLocalOrder = createAction<TOrder, 'orders/addLocalOrder'>('orders/addLocalOrder');
-
-export const getFeedsThunk = createAsyncThunk(
-  'feed/fetchInfo',
-  async (_, { rejectWithValue }) => {
+export const postUserBurgerThunk = createAsyncThunk(
+  'order/postUserBurger',
+  async (userBurgerIngredients: string[], { rejectWithValue }) => {
     try {
-      return await getFeedsApi();
-    } catch (err: any) {
-      return rejectWithValue(err.message || 'Ошибка загрузки ленты заказов');
+      return await orderBurgerApi(userBurgerIngredients);
+    } catch (err) {
+      const error = err as Error;
+      return rejectWithValue(error.message || 'Ошибка отправки заказа');
     }
   }
 );
@@ -59,33 +40,13 @@ export const getOrderByNumberThunk = createAsyncThunk(
   'feed/fetchByNumber',
   async (orderNumber: number, { rejectWithValue }) => {
     try {
-      return await getOrderByNumberApi(orderNumber);
-    } catch (err: any) {
+      const response = await getOrderByNumberApi(orderNumber);
+      return response.orders[0];
+    } catch (err) {
+      const error = err as Error;
       return rejectWithValue(
-        err.message || 'Ошибка получения заказа по номеру'
+        error.message || 'Ошибка получения заказа по номеру'
       );
-    }
-  }
-);
-
-export const postUserBurderThunk = createAsyncThunk(
-  'order/postUserBurger',
-  async (userBurgerIngredients: string[], { rejectWithValue }) => {
-    try {
-      return await orderBurgerApi(userBurgerIngredients);
-    } catch (err: any) {
-      return rejectWithValue(err.message || 'Ошибка отправки заказа');
-    }
-  }
-);
-
-export const getUserOrdersThunk = createAsyncThunk(
-  'order/getUserOrders',
-  async (_, { rejectWithValue }) => {
-    try {
-      return await getOrdersApi();
-    } catch (err: any) {
-      return rejectWithValue(err.message || 'Ошибка отправки заказа');
     }
   }
 );
@@ -94,29 +55,31 @@ export const ordersSlice = createSlice({
   name: 'orders',
   initialState,
   reducers: {
-    setNewOrder: (state, action) => {
-      state.orderRequest = action.payload;
-      state.newOrder.order = null;
+    clearNewOrder: (state) => {
+      state.newOrder = { order: null, name: '' };
     },
-    addLocalOrder: (state, action: PayloadAction<TOrder>) => {
-      state.localOrders.unshift(action.payload);
-    },
-    clearLocalOrders: (state) => {
-      state.localOrders = [];
+    clearOrderByNumber: (state) => {
+      state.orderByNumber = null;
     }
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getFeedsThunk.pending, (state) => {
+      .addCase(postUserBurgerThunk.pending, (state) => {
         state.loading = true;
+        state.orderRequest = true;
         state.error = null;
       })
-      .addCase(getFeedsThunk.fulfilled, (state, action) => {
+      .addCase(postUserBurgerThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.feed = action.payload;
+        state.orderRequest = false;
+        state.newOrder = {
+          order: action.payload.order,
+          name: action.payload.name
+        };
       })
-      .addCase(getFeedsThunk.rejected, (state, action) => {
+      .addCase(postUserBurgerThunk.rejected, (state, action) => {
         state.loading = false;
+        state.orderRequest = false;
         state.error = action.payload as string;
       })
 
@@ -127,91 +90,26 @@ export const ordersSlice = createSlice({
       })
       .addCase(getOrderByNumberThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.orderByNumber = action.payload.orders[0];
+        state.orderByNumber = action.payload;
       })
       .addCase(getOrderByNumberThunk.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-
-      .addCase(postUserBurderThunk.pending, (state) => {
-        state.loading = true;
-        state.orderRequest = true;
-        state.error = null;
-      })
-      .addCase(postUserBurderThunk.fulfilled, (state, action) => {
-        state.loading = false;
-        state.orderRequest = false;
-        state.newOrder = {
-          order: action.payload.order,
-          name: action.payload.name
-        };
-
-        const localOrder: TOrder = {
-          ...action.payload.order,
-          createdAt: new Date().toISOString()
-        };
-        state.localOrders.unshift(localOrder);
-
-        state.feed.total += 1;
-        state.feed.totalToday +=1;
-      })
-      .addCase(postUserBurderThunk.rejected, (state, action) => {
-        state.loading = false;
-        state.orderRequest = false;
-        state.error = action.payload as string;
-      })
-
-      .addCase(getUserOrdersThunk.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-
-        state.localOrders = [];
-      })
-      .addCase(getUserOrdersThunk.fulfilled, (state, action) => {
-        state.loading = false;
-        state.userOrders = action.payload;
-      })
-      .addCase(getUserOrdersThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
   },
   selectors: {
-    selectFeedOrders: (state) => {
-      const allOrders = [...state.localOrders, ...state.feed.orders];
-      const uniqueOrders = allOrders.filter((order, index, self) => 
-      index === self.findIndex((o) => o._id === order._id));
-      return uniqueOrders;
-    },
-    selectOrdersLoading: (state) => state.loading,
-    selectOrderByNumber: (state) => state.orderByNumber,
-    selectFeed: (state) => ({
-      ...state.feed,
-      total: state.feed.total + state.localOrders.length,
-      totalToday: state.feed.totalToday + state.localOrders.length
-    }),
     selectNewOrder: (state) => state.newOrder,
+    selectOrderByNumber: (state) => state.orderByNumber,
     selectOrderRequest: (state) => state.orderRequest,
-    selectUserOrders: (state) => {
-      const allOrders = [...state.localOrders, ...state.userOrders];
-      const uniqueOrders = allOrders.filter((order, index, self) => 
-      index === self.findIndex((o) => o._id === order._id));
-
-      return uniqueOrders;
-    }
+    selectOrdersLoading: (state) => state.loading
   }
 });
 
+export const { clearNewOrder, clearOrderByNumber } = ordersSlice.actions;
 export const {
-  selectFeedOrders,
-  selectOrdersLoading,
-  selectOrderByNumber,
-  selectFeed,
   selectNewOrder,
+  selectOrderByNumber,
   selectOrderRequest,
-  selectUserOrders
+  selectOrdersLoading
 } = ordersSlice.selectors;
-
 export const ordersReducer = ordersSlice.reducer;
-export const { setNewOrder } = ordersSlice.actions;

@@ -1,60 +1,70 @@
 import { FC, useEffect, useMemo } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient } from '@utils-types';
+import { TIngredient, TOrder } from '@utils-types';
 import { useParams } from 'react-router-dom';
 import {
   getOrderByNumberThunk,
-  selectOrderByNumber
+  selectOrderByNumber,
+  clearOrderByNumber
 } from '../../services/slices/orders-slice';
 import { useDispatch, useSelector } from '../../services/store';
 import { selectIngredients } from '../../services/slices/ingredients-slice';
 
+type TIngredientsWithCount = {
+  [key: string]: TIngredient & { count: number };
+};
+
 export const OrderInfo: FC = () => {
   const { number } = useParams<{ number: string }>();
   const orderNumber = Number(number);
-
-  /** DO: взять переменные orderData и ingredients из стора */
-  const orderData = useSelector(selectOrderByNumber);
-
+  
   const dispatch = useDispatch();
+  const orderData = useSelector(selectOrderByNumber);
+  const ingredients: TIngredient[] = useSelector(selectIngredients);
 
   useEffect(() => {
-    dispatch(getOrderByNumberThunk(orderNumber));
-  }, []);
-
-  const ingredients: TIngredient[] = useSelector(selectIngredients);
+    if (orderNumber) {
+      dispatch(getOrderByNumberThunk(orderNumber));
+    }
+    
+    return () => {
+      dispatch(clearOrderByNumber());
+    };
+  }, [dispatch, orderNumber]);
 
   const orderInfo = useMemo(() => {
     if (!orderData || !ingredients.length) return null;
 
     const date = new Date(orderData.createdAt);
 
-    type TIngredientsWithCount = {
-      [key: string]: TIngredient & { count: number };
-    };
-
     const ingredientsInfo = orderData.ingredients.reduce(
-      (acc: TIngredientsWithCount, item) => {
-        if (!acc[item]) {
-          const ingredient = ingredients.find((ing) => ing._id === item);
-          if (ingredient) {
-            acc[item] = {
-              ...ingredient,
-              count: 1
-            };
-          }
+      (acc: TIngredientsWithCount, itemId: string) => {
+        const ingredient = ingredients.find((ing: TIngredient) => ing._id === itemId);
+        
+        if (!ingredient) return acc;
+        
+        if (!acc[itemId]) {
+          acc[itemId] = {
+            ...ingredient,
+            count: 1
+          };
         } else {
-          acc[item].count++;
+          acc[itemId].count++;
         }
 
         return acc;
       },
-      {}
+      {} as TIngredientsWithCount
     );
 
     const total = Object.values(ingredientsInfo).reduce(
-      (acc, item) => acc + item.price * item.count,
+      (acc: number, item: TIngredient & { count: number }) => {
+        if (item.type === 'bun') {
+          return acc + item.price * 2 * item.count;
+        }
+        return acc + item.price * item.count;
+      },
       0
     );
 

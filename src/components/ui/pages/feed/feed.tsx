@@ -1,12 +1,10 @@
 import { FC, memo } from 'react';
-
 import styles from './feed.module.css';
-
 import { FeedUIProps } from './type';
 import { OrdersList, FeedInfo } from '@components';
 import { RefreshButton } from '@zlden/react-developer-burger-ui-components';
 
-export const FeedUI: FC<FeedUIProps> = memo(({ orders, handleGetFeeds }) => (
+export const FeedUI: FC<FeedUIProps> = memo(({ orders, handleGetFeeds, feed }) => (
   <main className={styles.containerMain}>
     <div className={`${styles.titleBox} mt-10 mb-5`}>
       <h1 className={`${styles.title} text text_type_main-large`}>
@@ -23,7 +21,7 @@ export const FeedUI: FC<FeedUIProps> = memo(({ orders, handleGetFeeds }) => (
         <OrdersList orders={orders} />
       </div>
       <div className={styles.columnInfo}>
-        <FeedInfo />
+        <FeedInfo orders={orders} feed={feed} />
       </div>
     </div>
   </main>
