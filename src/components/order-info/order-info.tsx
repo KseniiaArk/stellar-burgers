@@ -61,7 +61,7 @@ export const OrderInfo: FC = () => {
     const total = Object.values(ingredientsInfo).reduce(
       (acc: number, item: TIngredient & { count: number }) => {
         if (item.type === 'bun') {
-          return acc + item.price * 2 * item.count;
+          return acc + item.price * (item.count  / 2);
         }
         return acc + item.price * item.count;
       },

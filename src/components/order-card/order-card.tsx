@@ -28,7 +28,7 @@ export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
     const bun = ingredientsInfo.find((ing: TIngredient) => ing.type === 'bun');
     const otherIngredients = ingredientsInfo.filter((ing: TIngredient) => ing.type !== 'bun');
 
-    const bunPrice = bun ? bun.price * 2 : 0;
+    const bunPrice = bun ? bun.price : 0;
     const otherPrice = otherIngredients.reduce(
       (sum: number, ing: TIngredient) => sum + ing.price, 
       0

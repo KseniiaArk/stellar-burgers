@@ -1,8 +1,9 @@
 import { Preloader } from '@ui';
 import { FeedUI } from '@ui-pages';
 import { TOrder } from '@utils-types';
-import { FC, useState, useCallback } from 'react';
+import { FC, useState, useCallback, useEffect } from 'react';
 import { useWebSocket } from '../../hooks/use-websocket';
+import { getFeedsApi } from '@api';
 
 type TWebSocketMessage = {
   success: boolean;
@@ -16,6 +17,7 @@ export const Feed: FC = () => {
   const [orders, setOrders] = useState<TOrder[]>([]);
   const [total, setTotal] = useState(0);
   const [totalToday, setTotalToday] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const handleMessage = useCallback((data: TWebSocketMessage) => {
     console.log('WebSocket data received:', {
@@ -41,19 +43,39 @@ export const Feed: FC = () => {
     handleError
   );
 
-  const handleGetFeeds = () => {
+  const fetchFeedsApi = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getFeedsApi();
+      setOrders(data.orders);
+      setTotal(data.total);
+      setTotalToday(data.totalToday);
+    } catch (error) {
+      console.error('Ошибка при загрузке ленты заказов:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchFeedsApi();
+  }, [fetchFeedsApi]);
+
+  const handleGetFeeds = useCallback(() => {
+    fetchFeedsApi();
+    
     disconnect();
     setTimeout(() => {
       reconnect();
     }, 100);
-  };
+  }, [fetchFeedsApi, disconnect, reconnect]);
 
   const feedData = {
     total,
     totalToday
   };
 
-  if (!isConnected && orders.length === 0) {
+  if ((!isConnected && orders.length === 0) || loading) {
     return <Preloader />;
   }
 

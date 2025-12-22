@@ -60,7 +60,7 @@ export const BurgerConstructor: FC = () => {
 
   const price = useMemo(
     () =>
-      (userBurger.bun ? userBurger.bun.price * 2 : 0) +
+      (userBurger.bun ? userBurger.bun.price : 0) +
       userBurger.ingredients.reduce(
         (s: number, v: TConstructorIngredient) => s + v.price,
         0
