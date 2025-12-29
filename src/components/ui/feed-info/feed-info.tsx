@@ -1,8 +1,6 @@
 import React, { FC, memo } from 'react';
-
 import styles from './feed-info.module.css';
-
-import { FeedInfoUIProps, HalfColumnProps, TColumnProps } from './type';
+import { FeedInfoUIProps, TFeedData } from './type';
 
 export const FeedInfoUI: FC<FeedInfoUIProps> = memo(
   ({ feed, readyOrders, pendingOrders }) => {
@@ -25,7 +23,11 @@ export const FeedInfoUI: FC<FeedInfoUIProps> = memo(
   }
 );
 
-const HalfColumn: FC<HalfColumnProps> = ({ orders, title, textColor }) => (
+const HalfColumn: FC<{
+  orders: number[];
+  title: string;
+  textColor?: string;
+}> = ({ orders, title, textColor }) => (
   <div className={`pr-6 ${styles.column}`}>
     <h3 className={`text text_type_main-medium ${styles.title}`}>{title}:</h3>
     <ul className={`pt-6  ${styles.list}`}>
@@ -42,7 +44,7 @@ const HalfColumn: FC<HalfColumnProps> = ({ orders, title, textColor }) => (
   </div>
 );
 
-const Column: FC<TColumnProps> = ({ title, content }) => (
+const Column: FC<{ title: string; content: number }> = ({ title, content }) => (
   <>
     <h3 className={`pt-15 text text_type_main-medium ${styles.title}`}>
       {title}:
