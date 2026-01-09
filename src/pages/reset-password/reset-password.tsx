@@ -12,7 +12,7 @@ export const ResetPassword: FC = () => {
 
   useEffect(() => {
     if (!localStorage.getItem('resetPassword')) {
-      navigate('/forgot-password', {replace: true});
+      navigate('/forgot-password', { replace: true });
     } else {
       setLoading(false);
     }
@@ -24,7 +24,7 @@ export const ResetPassword: FC = () => {
     resetPasswordApi({ password, token })
       .then(() => {
         localStorage.removeItem('resetPassword');
-        navigate('/login', {replace: true});
+        navigate('/login', { replace: true });
       })
       .catch((err) => setError(err));
   };

@@ -22,7 +22,8 @@ export const ProfileOrders: FC = () => {
 
   const handleMessage = useCallback((data: TWebSocketMessage) => {
     const sortedOrders = [...data.orders].sort(
-      (a: TOrder, b: TOrder) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      (a: TOrder, b: TOrder) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
     setOrders(sortedOrders);
   }, []);
@@ -42,7 +43,9 @@ export const ProfileOrders: FC = () => {
       const token = getCookie('accessToken');
       if (token) {
         const cleanToken = token.replace('Bearer ', '');
-        setWsUrl(`wss://norma.education-services.ru/orders?token=${cleanToken}`);
+        setWsUrl(
+          `wss://norma.education-services.ru/orders?token=${cleanToken}`
+        );
       }
     }
 

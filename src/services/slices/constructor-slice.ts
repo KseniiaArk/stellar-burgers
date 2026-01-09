@@ -62,7 +62,11 @@ export const constructorSlice = createSlice({
 });
 export const { selectConstructor } = constructorSlice.selectors;
 
-export const { addIngredient, removeIngredients, clearConstructor, changeIngredient } =
-  constructorSlice.actions;
+export const {
+  addIngredient,
+  removeIngredients,
+  clearConstructor,
+  changeIngredient
+} = constructorSlice.actions;
 
 export const constructorReducer = constructorSlice.reducer;

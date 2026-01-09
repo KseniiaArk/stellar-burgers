@@ -20,11 +20,10 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
 }) => (
   <section
     className={styles.burger_constructor}
+    data-testid='burger-constructor'
   >
     {constructorItems.bun ? (
-      <div
-        className={`${styles.element} mb-4 mr-4`}
-      >
+      <div className={`${styles.element} mb-4 mr-4`}>
         <ConstructorElement
           type='top'
           isLocked
@@ -40,7 +39,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         Выберите булки
       </div>
     )}
-    <ul className={styles.elements}>
+    <ul className={styles.elements} data-testid='constructor-ingredients-list'>
       {constructorItems.ingredients.length > 0 ? (
         constructorItems.ingredients.map(
           (item: TConstructorIngredient, index: number) => (
@@ -88,6 +87,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         size='large'
         children='Оформить заказ'
         onClick={onOrderClick}
+        data-testid='make-order'
       />
     </div>
 
