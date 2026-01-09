@@ -66,13 +66,13 @@ const testReducer = () => {
     rejected: { type: 'user/checkUserAuth/rejected' }
   };
 
-  const reducer = (state = initialState, action: any) => {
+  const reducer = (state = initialState, action: {type: string; payload?: unknown}) => {
     switch (action.type) {
       case setUser.type:
-        return { ...state, user: action.payload };
+        return { ...state, user: action.payload as TUser };
 
       case setIsAuthChecked.type:
-        return { ...state, isAuthChecked: action.payload };
+        return { ...state, isAuthChecked: action.payload as boolean };
 
       case registerUserThunk.pending.type:
       case loginUserThunk.pending.type:
@@ -86,7 +86,7 @@ const testReducer = () => {
         return {
           ...state,
           loading: false,
-          user: action.payload.user,
+          user: (action.payload as typeof mockAuthResponse).user,
           isAuthChecked: true
         };
 
@@ -94,7 +94,7 @@ const testReducer = () => {
         return {
           ...state,
           loading: false,
-          user: action.payload.user,
+          user: (action.payload as typeof mockAuthResponse).user,
           isAuthChecked: true
         };
 
@@ -102,7 +102,7 @@ const testReducer = () => {
         return {
           ...state,
           loading: false,
-          user: action.payload.user
+          user: (action.payload as {user: TUser}).user
         };
 
       case logoutUserThunk.fulfilled.type:
@@ -116,7 +116,7 @@ const testReducer = () => {
         return {
           ...state,
           loading: false,
-          user: action.payload,
+          user: action.payload as TUser | null,
           isAuthChecked: true
         };
 
@@ -127,14 +127,14 @@ const testReducer = () => {
         return {
           ...state,
           loading: false,
-          error: action.payload
+          error: action.payload as string
         };
       case checkUserAuth.rejected.type:
         return {
           ...state,
           loading: false,
           isAuthChecked: true,
-          error: action.payload
+          error: action.payload as string
         };
 
       default:

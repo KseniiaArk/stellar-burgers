@@ -54,10 +54,10 @@ describe('Constructor Slice', () => {
   describe('addIngredient action', () => {
     it('should add bun to burger', () => {
       const action = {
-        type: 'someconstructor/addIngredient',
+        type: 'someconstructor/addIngredient' as const,
         payload: {
           ...mockBun,
-          id: expect.any(String)
+          id: 'bun_id_1'
         }
       };
 
@@ -69,10 +69,10 @@ describe('Constructor Slice', () => {
 
     it('should add ingredient to burger', () => {
       const action = {
-        type: 'someconstructor/addIngredient',
+        type: 'someconstructor/addIngredient' as const,
         payload: {
           ...mockIngredient,
-          id: expect.any(String)
+          id: 'ingredient_id_1'
         }
       };
 

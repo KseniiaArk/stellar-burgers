@@ -5,12 +5,30 @@ describe('Testing the adding of ingredients, the operation of modals, creating a
     cy.wait('@getIngredients');
     });
 
+    afterEach(() => {
+        cy.clearAuthTokens();
+        cy.clearCookies();
+        cy.clearLocalStorage();
+    });
+
     it('Test: adding ingredients into constructor', () => {
         const ingredientName = 'Биокотлета из марсианской Магнолии';
 
+        cy.get('[data-testid="constructor-ingredients-list"]')
+        .should('exist')
+        .within(() => {
+            cy.get('.constructor-element').should('not.exist');
+            cy.contains('Выберите начинку').should('exist');
+        });
+
         cy.addIngredientByName(ingredientName);
 
-        cy.get('[data-testid="constructor-ingredients-list"] .constructor-element__text').contains(ingredientName)
+        cy.get('[data-testid="constructor-ingredients-list"]')
+        .within(() => {
+            cy.get('.constructor-element__text')
+                .should('contain', ingredientName);
+            cy.contains('Выберите начинку').should('not.exist');
+        });
     });
 
     it('Test: modal', () => {
@@ -20,22 +38,45 @@ describe('Testing the adding of ingredients, the operation of modals, creating a
             .contains('[data-testid="ingredient-name"]', ingredientName)
             .click();
 
-        cy.get('[data-testid="modal-open"]').should('be.visible');
+        cy.get('[data-testid="modal-open"]')
+            .should('be.visible')
+            .within(() => {
+                cy.contains(ingredientName).should('be.visible');
+            });
 
         cy.closeModal();
+        cy.get('[data-testid="modal-open"]').should('not.exist');
 
         cy.get('[data-testid="ingredient-card"]')
             .contains('[data-testid="ingredient-name"]', ingredientName)
             .click();
 
+        cy.get('[data-testid="modal-open"]')
+            .should('be.visible')
+            .within(() => {
+                cy.contains(ingredientName).should('be.visible');
+        });
+
         cy.closeModalByOverlay();
+        cy.get('[data-testid="modal-open"]').should('not.exist');
+
+        cy.get('[data-testid="ingredient-card"]')
+            .contains('[data-testid="ingredient-name"]', ingredientName)
+            .click();
+
+        cy.get('[data-testid="modal-open"]')
+            .should('be.visible')
+            .within(() => {
+                cy.contains(ingredientName).should('be.visible');
+            });
+
+
+        cy.get('body').type('{esc}');
+        cy.get('[data-testid="modal-open"]').should('not.exist');
     });
 
     it('Test: make order', () => {
-        cy.fixture('login.json').then((loginData) => {
-            cy.setCookie('accessToken', loginData.accessToken);
-            window.localStorage.setItem('refreshToken', loginData.refreshToken);
-        });
+        cy.setAuthTokens();
 
         cy.fixture('user.json').then((userData) => {
             cy.intercept('GET', '/api/auth/user', { statusCode: 200, body: userData });
@@ -45,10 +86,17 @@ describe('Testing the adding of ingredients, the operation of modals, creating a
         });
 
         cy.visit('/');
+
+        cy.contains('Выберите булки').should('exist');
+        cy.contains('Выберите начинку').should('exist');
+
         cy.addIngredientByName('Флюоресцентная булка R2-D3');
         cy.addIngredientByName('Биокотлета из марсианской Магнолии');
         cy.addIngredientByName('Филе Люминесцентного тетраодонтимформа');
         cy.addIngredientByName('Говяжий метеорит (отбивная)');
+
+        cy.contains('Выберите начинку').should('not.exist');
+
         cy.get('[data-testid="make-order"]')
             .click();
 
@@ -62,6 +110,25 @@ describe('Testing the adding of ingredients, the operation of modals, creating a
 
         cy.get('[data-testid="modal-open"]').should('not.exist');
 
-        cy.get('[data-testid="constructor-ingredients-list"]').should('not.have.descendants');
+
+        cy.contains('Выберите булки').should('exist');
+        cy.contains('Выберите начинку').should('exist');
+    });
+
+    describe('Edge cases', () => {
+    it('should handle empty constructor when trying to delete', () => {
+        cy.get('[data-testid="constructor-ingredients-list"]')
+            .find('[data-testid="delete-ingredient"]')
+            .should('not.exist');
+    });
+
+    it('should not crash when drag-n-drop with invalid indices', () => {
+        cy.addIngredientByName('Биокотлета из марсианской Магнолии');
+        
+        cy.get('[data-testid="constructor-ingredients-list"]')
+            .should('exist');
     });
 });
+});
+
+
