@@ -80,7 +80,7 @@ export const logoutUserThunk = createAsyncThunk(
       await logoutApi();
       setCookie('accessToken', '', { expires: -1 });
       localStorage.removeItem('refreshToken');
-      
+
       return null;
     } catch (err) {
       const error = err as Error;
@@ -101,7 +101,7 @@ export const checkUserAuth = createAsyncThunk(
     } catch (err) {
       setCookie('accessToken', '', { expires: -1 });
       localStorage.removeItem('refreshToken');
-      
+
       const error = err as Error;
       return rejectWithValue(error.message || 'Ошибка проверки авторизации');
     }
@@ -203,8 +203,12 @@ export const authSlice = createSlice({
   }
 });
 
-export const { selectUser, selectIsAuthChecked, selectUserLoading, selectUserError } =
-  authSlice.selectors;
+export const {
+  selectUser,
+  selectIsAuthChecked,
+  selectUserLoading,
+  selectUserError
+} = authSlice.selectors;
 export const { setUser } = authSlice.actions;
 
 export const userReducer = authSlice.reducer;

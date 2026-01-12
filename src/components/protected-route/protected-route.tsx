@@ -1,6 +1,9 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import React from 'react';
-import { selectIsAuthChecked, selectUser } from '../../services/slices/auth-slice';
+import {
+  selectIsAuthChecked,
+  selectUser
+} from '../../services/slices/auth-slice';
 import { Preloader } from '@ui';
 import { useSelector } from '../../services/store';
 
@@ -43,7 +46,6 @@ export const UnAuthRoute = ({ children }: { children: React.ReactElement }) => {
 
   if (!user) return children;
 
-  
   const from = location.state?.from || { pathname: '/' };
   const backgroundLocation = location.state?.from?.background || null;
 

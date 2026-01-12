@@ -25,9 +25,10 @@ export const Feed: FC = () => {
       total: data.total,
       totalToday: data.totalToday,
       doneOrders: data.orders.filter((o: TOrder) => o.status === 'done').length,
-      pendingOrders: data.orders.filter((o: TOrder) => o.status === 'pending').length
+      pendingOrders: data.orders.filter((o: TOrder) => o.status === 'pending')
+        .length
     });
-    
+
     setOrders(data.orders);
     setTotal(data.total);
     setTotalToday(data.totalToday);
@@ -63,7 +64,7 @@ export const Feed: FC = () => {
 
   const handleGetFeeds = useCallback(() => {
     fetchFeedsApi();
-    
+
     disconnect();
     setTimeout(() => {
       reconnect();
@@ -80,10 +81,6 @@ export const Feed: FC = () => {
   }
 
   return (
-    <FeedUI
-      orders={orders}
-      feed={feedData}
-      handleGetFeeds={handleGetFeeds}
-    />
+    <FeedUI orders={orders} feed={feedData} handleGetFeeds={handleGetFeeds} />
   );
 };

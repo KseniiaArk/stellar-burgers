@@ -18,7 +18,7 @@ type TIngredientsWithCount = {
 export const OrderInfo: FC = () => {
   const { number } = useParams<{ number: string }>();
   const orderNumber = Number(number);
-  
+
   const dispatch = useDispatch();
   const orderData = useSelector(selectOrderByNumber);
   const ingredients: TIngredient[] = useSelector(selectIngredients);
@@ -27,7 +27,7 @@ export const OrderInfo: FC = () => {
     if (orderNumber) {
       dispatch(getOrderByNumberThunk(orderNumber));
     }
-    
+
     return () => {
       dispatch(clearOrderByNumber());
     };
@@ -40,10 +40,12 @@ export const OrderInfo: FC = () => {
 
     const ingredientsInfo = orderData.ingredients.reduce(
       (acc: TIngredientsWithCount, itemId: string) => {
-        const ingredient = ingredients.find((ing: TIngredient) => ing._id === itemId);
-        
+        const ingredient = ingredients.find(
+          (ing: TIngredient) => ing._id === itemId
+        );
+
         if (!ingredient) return acc;
-        
+
         if (!acc[itemId]) {
           acc[itemId] = {
             ...ingredient,
@@ -61,7 +63,7 @@ export const OrderInfo: FC = () => {
     const total = Object.values(ingredientsInfo).reduce(
       (acc: number, item: TIngredient & { count: number }) => {
         if (item.type === 'bun') {
-          return acc + item.price * (item.count  / 2);
+          return acc + item.price * (item.count / 2);
         }
         return acc + item.price * item.count;
       },

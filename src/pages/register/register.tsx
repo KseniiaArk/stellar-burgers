@@ -1,7 +1,12 @@
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
 import { RegisterUI } from '@ui-pages';
 import { useDispatch } from '../../services/store';
-import { registerUserThunk, selectUser, selectUserError, selectUserLoading } from '../../services/slices/auth-slice';
+import {
+  registerUserThunk,
+  selectUser,
+  selectUserError,
+  selectUserLoading
+} from '../../services/slices/auth-slice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Preloader } from '@ui';
@@ -20,7 +25,7 @@ export const Register: FC = () => {
 
   useEffect(() => {
     if (user) {
-      const from = location.state?.from || {pathname: '/'};
+      const from = location.state?.from || { pathname: '/' };
       navigate(from);
     }
   }, [user, navigate, location]);

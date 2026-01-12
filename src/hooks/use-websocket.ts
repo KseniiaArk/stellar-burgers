@@ -54,7 +54,7 @@ export const useWebSocket = (
     ws.current.onclose = (event: CloseEvent) => {
       console.log('WebSocket disconnected:', event.code, event.reason);
       setIsConnected(false);
-      
+
       if (event.code !== 1000) {
         setTimeout(() => {
           connect();
@@ -87,10 +87,10 @@ export const useWebSocket = (
     };
   }, [url, connect, disconnect]);
 
-  return { 
-    isConnected, 
-    disconnect, 
+  return {
+    isConnected,
+    disconnect,
     reconnect: connect,
-    sendMessage 
+    sendMessage
   };
 };

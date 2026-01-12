@@ -21,10 +21,10 @@ export const OrderStatus: FC<OrderStatusProps> = ({ status }) => {
       textStyle = '#00CCCC';
       break;
     case 'canceled':
-      textStyle = '#F2F2F3'; 
+      textStyle = '#F2F2F3';
       break;
     case 'created':
-      textStyle = '#F2F2F3'; 
+      textStyle = '#F2F2F3';
       break;
     default:
       textStyle = '#F2F2F3';
